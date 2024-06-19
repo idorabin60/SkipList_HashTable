@@ -41,20 +41,28 @@ abstract public class AbstractSkipList {
         }
 
         SkipListNode newNode = new SkipListNode(key);
-
+        int prevCounter = 0;
         for (int level = 0; level <= nodeHeight && prevNode != null; ++level) {
             SkipListNode nextNode = prevNode.getNext(level);
-            int skips = 1;
 
-            newNode.addLevel(nextNode, prevNode);
+            newNode.addLevel(nextNode, prevNode, prevCounter);
             prevNode.setNext(level, newNode);
             nextNode.setPrev(level, newNode);
 
             while (prevNode != null && prevNode.height() == level) {
                 prevNode = prevNode.getPrev(level);
-                skips = skips + 1;
+                prevCounter = prevCounter + prevNode.skip_nodes.get(level) + 1;
             }
-            newNode.skip_nodes.set(level + 1, skips);
+        }
+        SkipListNode nextNode = newNode.getNext(0);
+        SkipListNode nextNodeAfterHeigtIsReached = nextNode.getNext(nextNode.height());
+        for (int level = 0; level <= head.height(); level++) {
+            if (level > nextNode.height()) {
+                nextNodeAfterHeigtIsReached.skip_nodes.set(level,
+                        nextNodeAfterHeigtIsReached.skip_nodes.get(level) + 1);
+            }
+            nextNode.skip_nodes.set(level, nextNode.skip_nodes.get(level) - newNode.skip_nodes.get(level));
+
         }
 
         return newNode;
@@ -173,10 +181,11 @@ abstract public class AbstractSkipList {
             this.prev.set(level, prev);
         }
 
-        public void addLevel(SkipListNode next, SkipListNode prev) {
+        public void addLevel(SkipListNode next, SkipListNode prev, int spans) {
             ++height;
             this.next.add(next);
             this.prev.add(prev);
+            this.skip_nodes.add(spans);
         }
 
         public int height() {
