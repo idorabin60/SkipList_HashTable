@@ -7,15 +7,18 @@ abstract public class AbstractSkipList {
     final protected SkipListNode head;
     final protected SkipListNode tail;
 
+    protected int size;
+
     public AbstractSkipList() {
         head = new SkipListNode(Integer.MIN_VALUE);
         tail = new SkipListNode(Integer.MAX_VALUE);
+        size = 0;
         increaseHeight();
     }
 
     public void increaseHeight() {
-        head.addLevel(tail, null);
-        tail.addLevel(null, head);
+        head.addLevel(tail, null, 0);
+        tail.addLevel(null, head, this.size);
     }
 
     abstract SkipListNode find(int key);
@@ -30,6 +33,7 @@ abstract public class AbstractSkipList {
 
     public SkipListNode insert(int key) {
         int nodeHeight = generateHeight();
+        this.size++;
 
         while (nodeHeight > head.height()) {
             increaseHeight();
@@ -37,6 +41,7 @@ abstract public class AbstractSkipList {
 
         SkipListNode prevNode = find(key);
         if (prevNode.key() == key) {
+            this.size--;
             return null;
         }
 
@@ -50,25 +55,39 @@ abstract public class AbstractSkipList {
             nextNode.setPrev(level, newNode);
 
             while (prevNode != null && prevNode.height() == level) {
-                prevNode = prevNode.getPrev(level);
                 prevCounter = prevCounter + prevNode.skip_nodes.get(level) + 1;
+                prevNode = prevNode.getPrev(level);
             }
         }
-        SkipListNode nextNode = newNode.getNext(0);
-        SkipListNode nextNodeAfterHeigtIsReached = nextNode.getNext(nextNode.height());
+        SkipListNode curr = newNode.getNext(0);
         for (int level = 0; level <= head.height(); level++) {
-            if (level > nextNode.height()) {
-                nextNodeAfterHeigtIsReached.skip_nodes.set(level,
-                        nextNodeAfterHeigtIsReached.skip_nodes.get(level) + 1);
+            while (curr.height() < level) {
+                curr = curr.getNext(level - 1);
             }
-            nextNode.skip_nodes.set(level, nextNode.skip_nodes.get(level) - newNode.skip_nodes.get(level));
-
+            if (level <= newNode.height()) {
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) - newNode.skip_nodes.get(level));
+            } else {
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) + 1);
+            }
         }
 
         return newNode;
     }
 
     public boolean delete(SkipListNode skipListNode) {
+        this.size--;
+
+        SkipListNode curr = skipListNode.getNext(0);
+        for (int level = 0; level <= head.height(); level++) {
+            while (curr.height() < level) {
+                curr = curr.getNext(level - 1);
+            }
+            if (level <= skipListNode.height()) {
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) - skipListNode.skip_nodes.get(level));
+            } else {
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) + 1);
+            }
+        }
         for (int level = 0; level <= skipListNode.height(); ++level) {
             SkipListNode prev = skipListNode.getPrev(level);
             SkipListNode next = skipListNode.getNext(level);
