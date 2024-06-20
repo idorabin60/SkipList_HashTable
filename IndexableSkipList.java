@@ -34,16 +34,16 @@ public class IndexableSkipList extends AbstractSkipList {
             while (current.getNext(level) != null && current.getNext(level).key() <= key) {
                 current = current.getNext(level);
                 System.out.println(level + " " + current.skip_nodes.get(level) + "  " + current.key());
-                counter += current.skip_nodes.get(level);
+                counter += current.skip_nodes.get(level) + 1;
 
             }
         }
         if (current.key() == key) {
             return counter;
         }
-        System.out.println("out of range ido");
-        System.out.println(counter);
-        System.out.println("nitati");
+        if (current.key() > key) {
+            return counter - (current.key() - key);
+        }
         return counter + 1;
 
     }
