@@ -43,6 +43,7 @@ public class IndexableSkipList extends AbstractSkipList {
         }
         System.out.println("out of range ido");
         System.out.println(counter);
+        System.out.println("nitati");
         return counter + 1;
 
     }
