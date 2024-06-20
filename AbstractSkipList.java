@@ -46,7 +46,7 @@ abstract public class AbstractSkipList {
         }
 
         SkipListNode newNode = new SkipListNode(key);
-        int prevCounter = 0;
+        int prevCounter = 1;
         for (int level = 0; level <= nodeHeight && prevNode != null; ++level) {
             SkipListNode nextNode = prevNode.getNext(level);
 
@@ -55,7 +55,7 @@ abstract public class AbstractSkipList {
             nextNode.setPrev(level, newNode);
 
             while (prevNode != null && prevNode.height() == level) {
-                prevCounter = prevCounter + prevNode.skip_nodes.get(level) + 1;
+                prevCounter = prevCounter + prevNode.skip_nodes.get(level);
                 prevNode = prevNode.getPrev(level);
             }
         }
@@ -83,9 +83,9 @@ abstract public class AbstractSkipList {
                 curr = curr.getNext(level - 1);
             }
             if (level <= skipListNode.height()) {
-                curr.skip_nodes.set(level, curr.skip_nodes.get(level) - skipListNode.skip_nodes.get(level));
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) + skipListNode.skip_nodes.get(level));
             } else {
-                curr.skip_nodes.set(level, curr.skip_nodes.get(level) + 1);
+                curr.skip_nodes.set(level, curr.skip_nodes.get(level) - 1);
             }
         }
         for (int level = 0; level <= skipListNode.height(); ++level) {
