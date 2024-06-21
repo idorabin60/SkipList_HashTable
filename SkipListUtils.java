@@ -5,6 +5,7 @@ public class SkipListUtils {
     }
 
     public static boolean[] changedMethodsArray() {
-        throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        boolean[] result = { true, true, true, false, false, false, false, false, false };
+        return result;
     }
 }

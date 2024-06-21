@@ -1,4 +1,6 @@
 import java.util.NoSuchElementException;
+
+import javax.swing.text.Style;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +78,6 @@ abstract public class AbstractSkipList {
 
     public boolean delete(SkipListNode skipListNode) {
         this.size--;
-
         SkipListNode curr = skipListNode.getNext(0);
         for (int level = 0; level <= head.height(); level++) {
             while (curr.height() < level) {

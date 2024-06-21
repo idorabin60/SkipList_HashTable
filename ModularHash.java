@@ -5,12 +5,14 @@ public class ModularHash implements HashFactory<Integer> {
     private HashingUtils utils;
 
     public ModularHash() {
-        throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        this.rand = new Random();
+        this.utils = new HashingUtils();
+
     }
 
     @Override
     public HashFunctor<Integer> pickHash(int k) {
-        throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        return new Functor(k);
     }
 
     public class Functor implements HashFunctor<Integer> {
@@ -19,8 +21,16 @@ public class ModularHash implements HashFactory<Integer> {
         final private long p;
         final private int m;
 
-        public Functor(int k){
-            throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        public Functor(int k) {
+            this.a = rand.nextInt(Integer.MAX_VALUE) + 1;
+            this.b = rand.nextInt(Integer.MAX_VALUE + 1) + 1;
+            long potential = utils.genLong(Integer.MAX_VALUE + 1, Long.MAX_VALUE - 1);
+            while (!utils.runMillerRabinTest(potential, 5)) {
+                potential = utils.genLong(Integer.MAX_VALUE + 1, Long.MAX_VALUE - 1);
+            }
+            this.p = potential;
+            this.m = (int) utils.fastModularPower(2, k, Long.MAX_VALUE);
+
         }
 
         @Override
@@ -42,6 +52,14 @@ public class ModularHash implements HashFactory<Integer> {
 
         public int m() {
             return m;
+        }
+
+        private int pow(int base, int exponent) {
+            long result = 1;
+            for (int i = 0; i < exponent; i++) {
+                result *= base;
+            }
+            return result;
         }
     }
 }

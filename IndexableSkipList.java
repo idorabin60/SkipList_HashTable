@@ -27,13 +27,11 @@ public class IndexableSkipList extends AbstractSkipList {
     }
 
     public int rank(int key) {
-        System.out.println(this.toString());
         SkipListNode current = this.head;
         int counter = 0;
         for (int level = this.head.height(); level >= 0; level--) {
             while (current.getNext(level) != null && current.getNext(level).key() <= key) {
                 current = current.getNext(level);
-                System.out.println(level + " " + current.skip_nodes.get(level) + "  " + current.key());
                 counter += current.skip_nodes.get(level) + 1;
 
             }
@@ -49,8 +47,17 @@ public class IndexableSkipList extends AbstractSkipList {
     }
 
     public int select(int index) {
-        return 0;
-
+        int counter = 0;
+        SkipListNode curr = head;
+        for (int level = head.height(); level >= 0; --level) {
+            while (curr.getNext(level) != tail && counter + curr.getNext(level).skip_nodes.get(level) + 1 <= index) {
+                curr = curr.getNext(level);
+                if (counter != index) {
+                    counter = counter + curr.skip_nodes.get(level) + 1;
+                }
+            }
+        }
+        return curr.key();
     }
 
 }
