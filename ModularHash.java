@@ -12,7 +12,12 @@ public class ModularHash implements HashFactory<Integer> {
 
     @Override
     public HashFunctor<Integer> pickHash(int k) {
-        return new Functor(k);
+        Functor blaFunctor = new Functor(k);
+        System.out.println(blaFunctor.a);
+        System.out.println(blaFunctor.b);
+        System.out.println(blaFunctor.p);
+        System.out.println(blaFunctor.m);
+        return blaFunctor;
     }
 
     public class Functor implements HashFunctor<Integer> {
@@ -22,8 +27,8 @@ public class ModularHash implements HashFactory<Integer> {
         final private int m;
 
         public Functor(int k) {
-            this.a = rand.nextInt(Integer.MAX_VALUE) + 1;
-            this.b = rand.nextInt(Integer.MAX_VALUE + 1) + 1;
+            this.a = rand.nextInt(Integer.MAX_VALUE - 1) + 1;
+            this.b = rand.nextInt(Integer.MAX_VALUE);
             long potential = utils.genLong(Integer.MAX_VALUE + 1, Long.MAX_VALUE - 1);
             while (!utils.runMillerRabinTest(potential, 5)) {
                 potential = utils.genLong(Integer.MAX_VALUE + 1, Long.MAX_VALUE - 1);
@@ -36,10 +41,9 @@ public class ModularHash implements HashFactory<Integer> {
 
         @Override
         public int hash(Integer key) {
-            int coreHasValue = (this.a * key) + this.b;
-            int hashValue = (int) utils.mod(coreHasValue, this.p);
-            int finalHashing = (int) utils.mod(hashValue, this.m);
-            return finalHashing;
+            long y = utils.mod((this.a * key) + this.b, this.p);
+            int resault = (int) utils.mod(y, m);
+            return resault;
         }
 
         public int a() {
