@@ -30,12 +30,16 @@ public class ModularHash implements HashFactory<Integer> {
             }
             this.p = potential;
             this.m = (int) utils.fastModularPower(2, k, Long.MAX_VALUE);
+            System.out.println(m);
 
         }
 
         @Override
         public int hash(Integer key) {
-            throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+            int coreHasValue = (this.a * key) + this.b;
+            int hashValue = (int) utils.mod(coreHasValue, this.p);
+            int finalHashing = (int) utils.mod(hashValue, this.m);
+            return finalHashing;
         }
 
         public int a() {
@@ -54,12 +58,5 @@ public class ModularHash implements HashFactory<Integer> {
             return m;
         }
 
-        private int pow(int base, int exponent) {
-            long result = 1;
-            for (int i = 0; i < exponent; i++) {
-                result *= base;
-            }
-            return result;
-        }
     }
 }
