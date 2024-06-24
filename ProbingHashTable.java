@@ -33,7 +33,7 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
     }
 
     public V search(K key) {
-        int elementIndex = this.hashFunc.hash(key);
+        int elementIndex = Math.abs(this.hashFunc.hash(key)) % this.capacity;
         int initialIndex = elementIndex;
         while (true) {
             if (this.table[elementIndex].key() == key) {
@@ -53,7 +53,48 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
 
     }
 
+    public Element<K, V> searchForDelete(K key) {
+        int elementIndex = Math.abs(this.hashFunc.hash(key)) % this.capacity;
+        int initialIndex = elementIndex;
+        while (true) {
+            if (this.table[elementIndex].key() == key) {
+                return this.table[elementIndex];
+            }
+            if (this.table[elementIndex] == null) {
+                return null;
+            } else {
+                elementIndex = HashingUtils.mod(initialIndex + 1, this.capacity);
+                if (elementIndex == initialIndex) {
+                    return null;
+
+                }
+            }
+
+        }
+
+    }
+
     public void insert(K key, V value) {
+        if (this.laodFactor >= maxLoadFactor) {
+            this.rehas();
+        } else {
+            Element<K, V> elementToBeInserted = new Element<>(key, value);
+            int indexToBeInserted = Math.abs(this.hashFunc.hash(key)) % this.capacity;
+            while (true) {
+                if (this.table[indexToBeInserted] == null || this.table[indexToBeInserted].key() == null) {
+                    this.table[indexToBeInserted] = elementToBeInserted;
+                    break;
+                } else {
+                    indexToBeInserted = HashingUtils.mod(indexToBeInserted + 1, this.capacity);
+                }
+
+            }
+        }
+        this.size++;
+        this.laodFactor = this.size / this.capacity;
+    }
+
+    public void rehas() {
         int newCapacity = this.capacity * 2;
         Element<K, V>[] newTable = new Element[newCapacity];
         HashFunctor<K> newHashFunction = hashFactory.pickHash(newCapacity);
@@ -61,7 +102,7 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
             if (this.table[i] == null || this.table[i].key() == null) {
                 continue;
             } else {
-                int indexToBeInserted = newHashFunction.hash(this.table[i].key());
+                int indexToBeInserted = Math.abs(newHashFunction.hash(this.table[i].key())) % this.capacity;
                 while (true) {
                     if (newTable[indexToBeInserted] == null) {
                         newTable[indexToBeInserted] = this.table[i];
@@ -79,12 +120,13 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
 
     }
 
-    public void rehas() {
-
-    }
-
     public boolean delete(K key) {
-        throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        Element<K, V> elementToDelete = searchForDelete(key);
+        if (elementToDelete != null) {
+            elementToDelete.setKey(null);
+            return true;
+        }
+        return false;
     }
 
     public HashFunctor<K> getHashFunc() {
@@ -95,3 +137,6 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
         return capacity;
     }
 }
+
+// nomodule in hash
+// trying to reach a key attribute of a null
