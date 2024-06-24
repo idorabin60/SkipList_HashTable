@@ -32,10 +32,12 @@ public class ChainedHashTable<K, V> implements HashTable<K, V> {
         this.currentLoadFactor = 0;
         this.size = 0;
 
+        this.fill(table);
+
     }
 
     public V search(K key) {
-        int listIndex = this.hashFunc.hash(key);
+        int listIndex = Math.abs(this.hashFunc.hash(key)) % this.capacity;
         List<Element<K, V>> desiredList = this.table[listIndex];
 
         if (desiredList != null) {
@@ -55,11 +57,12 @@ public class ChainedHashTable<K, V> implements HashTable<K, V> {
             int newCapacity = this.capacity * 2;
             HashFunctor<K> newHashFunction = hashFactory.pickHash(newCapacity);
             List<Element<K, V>>[] newTable = new List[newCapacity];
+            this.fill(newTable);
             for (int i = 0; i < this.table.length; i++) {
                 Iterator<Element<K, V>> iterator = this.table[i].iterator();
                 while (iterator.hasNext()) {
                     Element<K, V> element = iterator.next();
-                    int elementIndex = newHashFunction.hash(element.key());
+                    int elementIndex = Math.abs(newHashFunction.hash(element.key())) % newCapacity;
                     newTable[elementIndex].add(element);
                 }
             }
@@ -69,7 +72,7 @@ public class ChainedHashTable<K, V> implements HashTable<K, V> {
             this.hashFunc = newHashFunction;
         }
         Element<K, V> elmentToBeInserted = new Element<>(key, value);
-        int hashTableIndex = this.hashFunc.hash(elmentToBeInserted.key());
+        int hashTableIndex = Math.abs(this.hashFunc.hash(elmentToBeInserted.key())) % capacity;
         this.table[hashTableIndex].add(elmentToBeInserted);
         this.size++;
         this.currentLoadFactor = this.size / this.capacity;
@@ -77,7 +80,7 @@ public class ChainedHashTable<K, V> implements HashTable<K, V> {
 
     public boolean delete(K key) {
         boolean answer = false;
-        int listIndex = this.hashFunc.hash(key);
+        int listIndex = Math.abs(this.hashFunc.hash(key)) % capacity;
         List<Element<K, V>> desiredList = this.table[listIndex];
 
         if (desiredList != null) {
@@ -94,6 +97,12 @@ public class ChainedHashTable<K, V> implements HashTable<K, V> {
         }
         return answer;
 
+    }
+
+    public void fill(List<Element<K, V>>[] list) {
+        for (int i = 0; i < list.length; i++) {
+            list[i] = new LinkedList<Element<K, V>>();
+        }
     }
 
     public HashFunctor<K> getHashFunc() {
