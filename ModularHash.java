@@ -13,10 +13,6 @@ public class ModularHash implements HashFactory<Integer> {
     @Override
     public HashFunctor<Integer> pickHash(int k) {
         Functor blaFunctor = new Functor(k);
-        System.out.println(blaFunctor.a);
-        System.out.println(blaFunctor.b);
-        System.out.println(blaFunctor.p);
-        System.out.println(blaFunctor.m);
         return blaFunctor;
     }
 

@@ -1,11 +1,15 @@
 import java.util.List;
+
+import AbstractSkipList.SkipListNode;
+
 import java.util.ArrayList;
 
 public class MyDataStructure {
     /*
      * You may add any fields that you wish to add.
      * Remember that all the data-structures you use must be YOUR implementations,
-     * except for the List and its implementation for the operation Range(low, high).
+     * except for the List and its implementation for the operation Range(low,
+     * high).
      */
 
     /***
@@ -13,26 +17,47 @@ public class MyDataStructure {
      *
      * @param N The maximal number of items that may reside in the DS.
      */
-    public MyDataStructure(int N) {}
+    private IndexableSkipList myIndexableSkipList;
+    private ChainedHashTable<Integer, Element> myChainedHashTable;
 
-    /*
-     * In the following functions,
-     * you should REMOVE the place-holder return statements.
-     */
+    public MyDataStructure(int N) {
+        this.myIndexableSkipList = new IndexableSkipList(0.5);
+        ModularHash hushFunction = new ModularHash();
+        this.myChainedHashTable = new ChainedHashTable<>(hushFunction, N, 2);
+    }
+
     public boolean insert(int value) {
-        return false;
+        if (!(this.myChainedHashTable.search(value) == null)) {
+            return false;
+        }
+        this.myIndexableSkipList.insert(value);
+        AbstractSkipList.SkipListNode nodeToInsert = this.myIndexableSkipList.find(value);
+        this.myChainedHashTable.insert(value, nodeToInsert);
+        return true;
     }
 
     public boolean delete(int value) {
-        return false;
+        Element elementToBeDeleted = this.myChainedHashTable.search(value);
+        if (elementToBeDeleted == null) {
+            return false;
+        }
+        AbstractSkipList.SkipListNode nodeToBeDeleted = this.myIndexableSkipList.find(value);
+        this.myIndexableSkipList.delete(nodeToBeDeleted);
+        this.myChainedHashTable.delete(value);
+        return true;
     }
 
     public boolean contains(int value) {
-        return false;
+        Element isElementExists = this.myChainedHashTable.search(value);
+        if (isElementExists == null) {
+            return false;
+        }
+        return true;
+
     }
 
     public int rank(int value) {
-        return -1;
+        return this.myIndexableSkipList.rank(value);
     }
 
     public int select(int index) {
