@@ -1,7 +1,5 @@
 import java.util.List;
 
-import AbstractSkipList.SkipListNode;
-
 import java.util.ArrayList;
 
 public class MyDataStructure {
@@ -18,7 +16,7 @@ public class MyDataStructure {
      * @param N The maximal number of items that may reside in the DS.
      */
     private IndexableSkipList myIndexableSkipList;
-    private ChainedHashTable<Integer, Element> myChainedHashTable;
+    private ChainedHashTable<Integer, Element<Integer, AbstractSkipList.SkipListNode>> myChainedHashTable;
 
     public MyDataStructure(int N) {
         this.myIndexableSkipList = new IndexableSkipList(0.5);
@@ -32,7 +30,8 @@ public class MyDataStructure {
         }
         this.myIndexableSkipList.insert(value);
         AbstractSkipList.SkipListNode nodeToInsert = this.myIndexableSkipList.find(value);
-        this.myChainedHashTable.insert(value, nodeToInsert);
+        Element<Integer, AbstractSkipList.SkipListNode> elementToInsert = new Element<>(value, nodeToInsert);
+        this.myChainedHashTable.insert(value, elementToInsert);
         return true;
     }
 
@@ -65,6 +64,19 @@ public class MyDataStructure {
     }
 
     public List<Integer> range(int low, int high) {
-        return null;
+        List<Integer> result = new ArrayList<>();
+        Element<Integer, AbstractSkipList.SkipListNode> lowEl = this.myChainedHashTable.search(low);
+        if (lowEl == null) {
+            return null;
+        }
+        AbstractSkipList.SkipListNode lowNode = lowEl.satelliteData();
+        result.add(lowNode.key());
+        AbstractSkipList.SkipListNode currNode = lowNode.getNext(0);
+        while (currNode != null && currNode.key() <= high) {
+            result.add(currNode.key());
+            currNode = currNode.getNext(0);
+        }
+        return result;
+
     }
 }
