@@ -10,7 +10,7 @@ public class ProbingHashTable<K, V> implements HashTable<K, V> {
     private int capacity;
     private HashFunctor<K> hashFunc;
     private Element<K, V>[] table;
-    private double loadFactor;
+    protected double loadFactor;
     private int size;
 
     /*
