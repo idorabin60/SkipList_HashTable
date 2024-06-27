@@ -60,7 +60,7 @@ public class MyDataStructure {
     }
 
     public int select(int index) {
-        return Integer.MIN_VALUE;
+        return this.myIndexableSkipList.select(index);
     }
 
     public List<Integer> range(int low, int high) {

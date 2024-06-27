@@ -30,7 +30,7 @@ public class ModularHash implements HashFactory<Integer> {
                 potential = utils.genLong(Integer.MAX_VALUE + 1, Long.MAX_VALUE - 1);
             }
             this.p = potential;
-            this.m = (int) utils.fastModularPower(2, k, Long.MAX_VALUE);
+            this.m = (int) Math.pow(2, k);
             System.out.println(m);
 
         }
