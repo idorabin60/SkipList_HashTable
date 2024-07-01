@@ -76,7 +76,8 @@ public class MyDataStructure {
         // (Thanks to 2.4 section)
         // The rank operation in a Skip List has an expected time complexity of
         // Theta(log n).
-        // By adding 'span' fields to nodes, the algorithm can efficiently traverse and
+        // By adding 'skip_nodes' field to nodes, the algorithm can efficiently traverse
+        // and
         // count
         // the number of elements less than the given value, maintaining Theta(log n)
         // complexity.
@@ -90,7 +91,7 @@ public class MyDataStructure {
         // To find the i-th element, the algorithm traverses from the top level
         // downwards,
         // performing a binary-like search which requires log n comparisons on average.
-        // Additional 'span' or 'width' fields in nodes allow efficient skipping over
+        // Additional skip_nodes field in nodes allow efficient skipping over
         // nodes,
         // maintaining the expected time complexity of Theta(log n).
         return this.myIndexableSkipList.select(index);
